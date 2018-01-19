@@ -3,8 +3,8 @@
 import copy
 import random
 
-class RandomGen:
-	""" """
+class RandomGen():
+	""" Returns a random number from an input list  """
 	# value that may be returned by nextNum()
 	_random_nums = []
 	# probability of the occurence of random_nums
@@ -14,11 +14,50 @@ class RandomGen:
 
 	def __init__(self,random_nums,probabilities):
 		""" """
-		self._random_nums = random_nums
-		self._probabilities = copy.deepcopy(probabilities)
+		self.random_nums = random_nums
+		self.probabilities = probabilities
+		# perform additional validations on random_nums and probabilities
+		self.performValidations()
 		self._cum_probabilities = copy.deepcopy(probabilities)
 		for i in range(1, len(self._cum_probabilities)):
 			self._cum_probabilities[i] += self._cum_probabilities[i-1]
+
+	@property
+	def random_nums(self):
+		""" """
+		return self._random_nums
+
+	@random_nums.setter
+	def random_nums(self,r):
+		""" """
+		if not r or not isinstance(r,list):
+			raise ValueError("Random Numbers have to be a non empty list")
+		if not all(isinstance(num,int) for num in r):
+			raise ValueError("Random Numbers have to be integers")
+		self._random_nums = r
+
+	@property
+	def probabilities(self):
+		""" """
+		return self._probabilities
+
+	@probabilities.setter
+	def probabilities(self,p):
+		""" """
+		if not p or not isinstance(p,list):
+			raise ValueError("Probabilities have to be a non empty list")
+		if not all(isinstance(num,(int,float)) for num in p):
+			raise ValueError("Probablilities have to be real numbers")
+		if not all(0 <= num <=1 for num in p):
+			raise ValueError("Probablilities have to be between 0 and 1")
+		if round(sum(p),5) != 1:
+			raise ValueError("Sum of all Probablilities have to be 1")
+		self._probabilities = p
+
+	def performValidations(self):
+		""" """
+		if len(self.random_nums) != len(self.probabilities):
+			raise ValueError("Random numbers and Probablilities must be the same size")
 
 	def nextNum(self):
 		"""
@@ -31,12 +70,3 @@ class RandomGen:
 			if randomNum < self._cum_probabilities[i]:
 				break
 		return self._random_nums[i]
-
-if __name__ == '__main__':
-
-	results = {'1':0,'2':0,'3':0,'4':0,'5':0}
-	randomGenerator = RandomGen([1,2,3,4,5], [0.01,0.3,0.58,0.1,0.01])
-	for i in range(100):
-		nextNumber = randomGenerator.nextNum()
-		results[str(nextNumber)]+=1
-	print (results)
