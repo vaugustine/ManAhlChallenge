@@ -71,7 +71,6 @@ class RandomGen():
 		numbers roughly with the initialized probabilities.
 		"""
 		randomNum = random.random()
-		for i in range(len(self._cum_probabilities)):
-			if randomNum < self._cum_probabilities[i]:
-				break
-		return self._random_nums[i]
+		for random_num,cum_prob in zip(_random_nums,_cum_probabilities):
+			if randomNum < self.cum_prob:
+				return random_num
